@@ -50,7 +50,7 @@ config.configFile(process.argv[2], function (config, oldConfig) {
           if (! abs_counters[key]) {
             abs_counters[key] = 0;
           }
-          abs_counters[key] = Number(fields[0] || 0);
+          abs_counters[key] = (fields[0] || 0);
         } else {
           if (fields[2] && fields[2].match(/^@([\d\.]+)/)) {
             sampleRate = Number(fields[2].match(/^@([\d\.]+)/)[1]);
@@ -84,11 +84,13 @@ config.configFile(process.argv[2], function (config, oldConfig) {
       }
 
       for (key in abs_counters) {
-        var message = 'stats.abs.' + key + ' ' + abs_counters[key] + ' ' + ts + "\n";
-        statString += message;
-        delete abs_counters[key];
-
-        numStats += 1;
+        if (abs_counters[key]) {
+          var message = 'stats.abs.' + key + ' ' + abs_counters[key] + ' ' + ts + "\n";
+          statString += message;
+          abs_counters[key] = null;
+          
+          numStats += 1;
+        }
       }
 
       for (key in timers) {
