@@ -4,6 +4,7 @@ var dgram  = require('dgram')
   , config = require('./config')
 
 var counters = {};
+var abs_counters = {};
 var timers = {};
 var debugInt, flushInt, server;
 
@@ -45,6 +46,11 @@ config.configFile(process.argv[2], function (config, oldConfig) {
             timers[key] = [];
           }
           timers[key].push(Number(fields[0] || 0));
+        if (fields[1].trim() == "abs") {
+          if (! abs_counters[key]) {
+            abs_counters[key] = 0;
+          }
+          abs_counters[key] = Number(fields[0] || 0);
         } else {
           if (fields[2] && fields[2].match(/^@([\d\.]+)/)) {
             sampleRate = Number(fields[2].match(/^@([\d\.]+)/)[1]);
@@ -73,6 +79,14 @@ config.configFile(process.argv[2], function (config, oldConfig) {
         message += 'stats_counts.' + key + ' ' + counters[key] + ' ' + ts + "\n";
         statString += message;
         counters[key] = 0;
+
+        numStats += 1;
+      }
+
+      for (key in abs_counters) {
+        var message = 'stats.abs.' + key + ' ' + abs_counters[key] + ' ' + ts + "\n";
+        statString += message;
+        delete abs_counters[key];
 
         numStats += 1;
       }
