@@ -46,7 +46,7 @@ config.configFile(process.argv[2], function (config, oldConfig) {
             timers[key] = [];
           }
           timers[key].push(Number(fields[0] || 0));
-        if (fields[1].trim() == "abs") {
+        } else if (fields[1].trim() == "abs") {
           if (! abs_counters[key]) {
             abs_counters[key] = 0;
           }
